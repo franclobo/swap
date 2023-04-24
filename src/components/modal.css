@@ -1,0 +1,7 @@
+.modalshow {
+  display: block;
+  position: relative;
+  top: -370px;
+  z-index: 1;
+
+}

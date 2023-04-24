@@ -5,6 +5,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
+import Popup from './modal';
 
 function Home() {
 
@@ -21,6 +22,12 @@ function Home() {
       console.error(error);
     }
   }
+
+  const [openModal, setOpenModal] = useState(false);
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
 
   return (
     <div className="home">
@@ -46,12 +53,12 @@ function Home() {
         <h1 className="form-title">SWAP</h1>
         <Form className="form">
             <Form.Group className="mb-3" controlId="mb-3">
-            <Form.Label>Select a token</Form.Label><br />
+            <Form.Label onClick={handleOpenModal}>Select a token</Form.Label><br />
             <Form.Control type="number" placeholder="Amount" />
           </Form.Group>
 
             <Form.Group  className="mb-3" controlId="mb-3">
-            <Form.Label>Select a token</Form.Label><br />
+            <Form.Label onClick={handleOpenModal}>Select a token</Form.Label><br />
             <Form.Control type="number" placeholder="Amount" />
           </Form.Group>
 
@@ -70,6 +77,7 @@ function Home() {
           )}
         </Form>
       </div>
+      {openModal && <Popup onClose={() => setOpenModal(false)} />}
     </div>
   )
 }
