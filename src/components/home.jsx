@@ -29,6 +29,23 @@ function Home() {
     setOpenModal(true);
   };
 
+  const [selectedToken, setSelectedToken] = useState(null);
+
+  const handleSelectToken = (token) => {
+    setSelectedToken(token);
+    setOpenModal(false);
+    if (token) {
+      const from = document.getElementById("from");
+      const to = document.getElementById("to");
+
+      if (from.innerText === "Select a token") {
+        from.innerHTML = `<img src=${token.logoURI} alt="logo" /> ${token.symbol}`;
+      } else if (to.innerText === "Select a token") {
+        to.innerHTML = `<img src=${token.logoURI} alt="logo" /> ${token.symbol}`;
+      }
+    }
+  };
+
   return (
     <div className="home">
       <>
@@ -53,12 +70,16 @@ function Home() {
         <h1 className="form-title">SWAP</h1>
         <Form className="form">
             <Form.Group className="mb-3" controlId="mb-3">
-            <Form.Label onClick={handleOpenModal}>Select a token</Form.Label><br />
+            <Form.Label id="from" onClick={() => handleOpenModal()}>
+              Select a token
+            </Form.Label><br />
             <Form.Control type="number" placeholder="Amount" />
           </Form.Group>
 
             <Form.Group  className="mb-3" controlId="mb-3">
-            <Form.Label onClick={handleOpenModal}>Select a token</Form.Label><br />
+            <Form.Label id="to" onClick={() => handleOpenModal()}>
+              Select a token
+            </Form.Label><br />
             <Form.Control type="number" placeholder="Amount" />
           </Form.Group>
 
@@ -77,7 +98,7 @@ function Home() {
           )}
         </Form>
       </div>
-      {openModal && <Popup onClose={() => setOpenModal(false)} />}
+      {openModal && <Popup onClose={() => setOpenModal(false)} onSelect={handleSelectToken} />}
     </div>
   )
 }

@@ -3,5 +3,9 @@
   position: relative;
   top: -370px;
   z-index: 1;
+}
 
+.modal-body {
+  height: 70vh;
+  overflow-y: scroll;
 }
