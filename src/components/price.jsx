@@ -1,32 +1,21 @@
-import { useSelector, useDispatch } from 'react'
-import { fetchPrices } from '../redux/prices'
-import Prices from './prices'
+import { useDispatch, useSelector } from 'react-redux';
+import { getPrice, setPrice } from '../redux/prices.js'; // Added setPrice import
+import Form from 'react-bootstrap/Form';
 
 function Price() {
+  const dispatch = useDispatch();
+  const selectedToken = useSelector((state) => state.selectedToken);
+  const fromAmount = useSelector((state) => state.fromAmount);
+  const price = useSelector((state) => state.price);
 
-  const dispatch = useDispatch()
-  const prices = useSelector(state => state.prices)
-
-  if (!prices.length) {
-    dispatch(fetchPrices())
-    return <div className="loading">Loading ...</div>
-  }
+  const handleGetPrice = async () => { // Added async keyword to handleGetPrice
+    const price = await dispatch(getPrice(selectedToken, fromAmount)); // Wait for getPrice to finish and get the returned value
+    dispatch(setPrice(price)); // Dispatch the returned price to the Redux store
+  };
 
   return (
-    <div className="price-container">
-      <ul className="price-list">
-        {prices.map((price) => (
-          <div key={price.address} className="price-item">
-            <Prices
-              sellPrice={price.sellPrice}
-              buyPrice={price.buyPrice}
-              amount={price.amount}
-            />
-          </div>
-        ))}
-      </ul>
-    </div>
-  )
+    <Form.Control type="text" placeholder="0.0000" readOnly onChange={handleGetPrice} value={price} />
+  );
 }
 
-export default Price
+export default Price;

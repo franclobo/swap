@@ -7,6 +7,8 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Popup from './modal';
 import Price from './price';
+import qs from 'qs';
+
 
 function Home() {
 
@@ -45,27 +47,6 @@ function Home() {
         to.innerHTML = `<img src=${token.logoURI} alt="logo" /> ${token.symbol}`;
       }
     }
-
-    const getPrice = async () => {
-      const from = document.getElementById("from");
-      const to = document.getElementById("to");
-      const fromAmount = document.getElementById("from-amount");
-      const toAmount = document.getElementById("to-amount");
-
-      if (from.innerText !== "Select a token" && to.innerText !== "Select a token") {
-        const fromAddress = from.innerText.split(" ")[1];
-        const toAddress = to.innerText.split(" ")[1];
-
-        const url = `https://api.1inch.exchange/v3.0/1/quote?fromTokenAddress=${fromAddress}&toTokenAddress=${toAddress}&amount=${fromAmount.value}`;
-
-        const response = await fetch(url);
-        const data = await response.json();
-
-        toAmount.value = data.toTokenAmount;
-      }
-    };
-
-    getPrice();
   };
 
   return (
@@ -91,7 +72,7 @@ function Home() {
       <div className="form-content">
         <h1 className="form-title">SWAP</h1>
         <Form className="form">
-            <Form.Group className="mb-3" controlId="mb-3">
+          <Form.Group className="mb-3" controlId="mb-3">
             <Form.Label id="from" onClick={() => handleOpenModal()}>
               Select a token
             </Form.Label><br />
@@ -102,11 +83,11 @@ function Home() {
             <Form.Label id="to" onClick={() => handleOpenModal()}>
               Select a token
             </Form.Label><br />
-            <Form.Control type="number" placeholder="Amount" id="to-amount"/>
+            <Price />
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="mb-3">
-            <Form.Label>Estimated gas:</Form.Label><br />
+            <Form.Label>Estimated gas:<span id="gas">{qs.parse(window.location.search, { ignoreQueryPrefix: true }).gas}</span></Form.Label>
           </Form.Group>
 
           {isConnected ? (

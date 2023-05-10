@@ -1,29 +1,41 @@
-const url = `https://api.0x.org/swap/v1/prices`;
-const GET_PRICES = 'GET_PRICES';
+import qs from 'qs';
 
-const priceReducer = (state = [], action) => {
+const SET_PRICE = 'SET_PRICE';
+
+const initialState = null;
+
+const priceReducer = (state = initialState, action) => {
   switch (action.type) {
-    case GET_PRICES:
-      return action.prices;
+    case SET_PRICE:
+      return action.payload;
     default:
       return state;
   }
 };
 
-const getPrices = (prices) => ({
-  type: GET_PRICES,
-  prices,
+export const setPrice = (price) => ({
+  type: SET_PRICE,
+  payload: price,
 });
 
-export const fetchPrices = () => async (dispatch) => {
-  const List = [];
-  const response = await fetch(url+`${'?sellToken=ETH&buyToken=DAI'}+${'&sellAmount=1000000000000000000'}`);
-  const data = await response.json();
-  const { prices } = data;
-  Object.keys(prices).forEach((key) => {
-    List.push(prices[key]);
-  });
-  dispatch(getPrices(List));
+export const getPrice = (selectedToken, fromAmount) => async (dispatch) => {
+  if (!selectedToken.from || !selectedToken.to || !fromAmount) return;
+
+  const amount = Number(fromAmount) * 10 ** selectedToken.from.decimals;
+
+  const params = {
+    sellToken: selectedToken.from.address,
+    buyToken: selectedToken.to.address,
+    sellAmount: amount,
+  };
+
+  const headers = { '0x-api-key': 'c24e40fc-02e9-498c-a46a-40a84ab1814c' };
+
+  const response = await fetch(`https://api.0x.org/swap/v1/price?${qs.stringify(params)}`, { headers });
+
+  const swapPriceJSON = await response.json();
+
+  dispatch(setPrice(swapPriceJSON.price));
 };
 
 export default priceReducer;
