@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-function Tokens(props) {
+function Tokens(props, search) {
 
   const {
     img, symbol,

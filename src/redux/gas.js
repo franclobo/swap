@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import BigInt from 'big-integer';
 
-export const getPrice = createAsyncThunk(
-  'prices/getPrice', async (selectedToken) => {
+export const getEstimatedGas = createAsyncThunk(
+  'estimatedGas/getEstimatedGas', async (selectedToken) => {
     if (!selectedToken.from || !selectedToken.to || !selectedToken.fromAmount) return 0;
 
 
@@ -20,17 +20,15 @@ export const getPrice = createAsyncThunk(
 
     const response = await fetch(`https://api.0x.org/swap/v1/price?${new URLSearchParams(params)}`, { headers });
 
-    const swapPriceJSON = await response.json();
-    console.log(swapPriceJSON);
-    console.log(swapPriceJSON.estimatedGas);
-    return { price: swapPriceJSON.price, estimatedGas: swapPriceJSON.estimatedGas}
+    const swapQuoteJSON = await response.json();
+    console.log(swapQuoteJSON);
+    return swapQuoteJSON.estimatedGas;
   },
 );
 
-const priceSlice = createSlice({
-  name: 'prices',
+const gasSlice = createSlice({
+  name: 'estimatedGas',
   initialState: {
-    price: 0,
     estimatedGas: 0,
     status: "idle",
     error: null,
@@ -38,20 +36,21 @@ const priceSlice = createSlice({
 
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getPrice.fulfilled, (state, action) => {
-      state.price = action.payload.price;
-      state.estimatedGas = action.payload.estimatedGas;
+    builder.addCase(getEstimatedGas.fulfilled, (state, action) => {
+      state.price = action.payload;
       state.status = "succeeded";
       state.error = null;
     });
-    builder.addCase(getPrice.pending, (state, action) => {
+    builder.addCase(getEstimatedGas.pending, (state, action) => {
+      state.action = action.payload;
       state.status = "loading";
+      state.error = null;
     });
-    builder.addCase(getPrice.rejected, (state, action) => {
+    builder.addCase(getEstimatedGas.rejected, (state, action) => {
       state.status = "failed";
       state.error = action.error.message;
     });
   },
 });
 
-export default priceSlice.reducer;
+export default gasSlice.reducer;

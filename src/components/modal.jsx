@@ -1,22 +1,12 @@
-import React from 'react';
-import Modal from 'react-bootstrap/Modal';
+import React, { useState } from 'react';
 import Token from './token';
 import './modal.css'
 
-function Popup({ onSelect, onClose }) {
+function Popup({ onSelect }) {
 
   return (
     <div className="modalshow">
-      <Modal.Dialog className="modal-dialog">
-        <Modal.Header closeButton onClick={() => onClose(false)}>
-          <Modal.Title>Select a token</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body className="modal-body">
-          <Token handleSelectToken={onSelect} />
-        </Modal.Body>
-
-      </Modal.Dialog>
+      <Token onSelect={onSelect} />
     </div>
   );
 }

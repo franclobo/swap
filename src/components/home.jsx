@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { getPrice } from '../redux/prices.js';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
@@ -7,9 +7,9 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
-import Popup from './modal';
+import Token from './token';
 import Price from './price';
-import qs from 'qs';
+import EstimatedGas from './estimatedGas.jsx';
 
 
 function Home() {
@@ -36,10 +36,13 @@ function Home() {
     setOpenModal(true);
   };
 
-  const [selectedToken, setSelectedToken] = useState({ from: null, to: null });
+  const [selectedToken, setSelectedToken] = useState({
+    from: null,
+    to: null,
+    fromAmount: null,
+  });
 
-  const handleSelectToken = (token) => {
-    setSelectedToken(token);
+  const handleSelectToken = (token, tokenType) => {
     setOpenModal(false);
     if (token) {
       const from = document.getElementById("from");
@@ -51,7 +54,7 @@ function Home() {
         to.innerHTML = `<img src=${token.logoURI} alt="logo" /> ${token.symbol}`;
         setSelectedToken({ ...selectedToken, to: token });
       }
-      handleGetPrice();
+      dispatch(getPrice({ ...selectedToken, [tokenType]: token }));
     }
   };
 
@@ -63,9 +66,12 @@ function Home() {
 
   const handleGetPrice = () => {
     console.log(selectedToken);
-    dispatch(getPrice(selectedToken));
+    dispatch(getPrice(selectedToken)).then(() => {
+      console.log("Price fetched successfully.");
+    }).catch((error) => {
+      console.error("Error fetching price:", error);
+    });
   };
-
 
   return (
     <div className="home">
@@ -101,11 +107,19 @@ function Home() {
             <Form.Label id="to" onClick={() => handleOpenModal()}>
               Select a token
             </Form.Label><br />
-            <Price />
+            <Price selectedToken={selectedToken} />
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="mb-3">
-            <Form.Label>Estimated gas:<span id="gas">{qs.parse(window.location.search, { ignoreQueryPrefix: true }).gas}</span></Form.Label>
+            <Form.Label>
+              {
+                selectedToken.fromAmount && selectedToken.from && selectedToken.to ? (
+                  <span>Estimated Gas: <EstimatedGas selectedToken={selectedToken} /> </span>
+                ) : (
+                  <span>Estimated Gas: </span>
+                )
+              }
+            </Form.Label>
           </Form.Group>
 
           {isConnected ? (
@@ -119,7 +133,7 @@ function Home() {
           )}
         </Form>
       </div>
-      {openModal && <Popup onClose={() => setOpenModal(false)} onSelect={handleSelectToken}/>}
+      {openModal && <Token onClose={() => setOpenModal(false)} onSelect={handleSelectToken}/>}
     </div>
   )
 }
