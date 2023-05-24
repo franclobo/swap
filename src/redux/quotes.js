@@ -1,12 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import BigInt from 'big-integer';
 
-export const getEstimatedGas = createAsyncThunk(
-  'estimatedGas/getEstimatedGas', async (selectedToken) => {
+export const getQuote = createAsyncThunk(
+  'quote/getQuote', async (selectedToken, { getState }) => {
     if (!selectedToken.from || !selectedToken.to || !selectedToken.fromAmount) return 0;
 
 
-    const amount = BigInt(Number(selectedToken.fromAmount)) * BigInt(10 ** selectedToken.from.decimals);
+    const amount = Number(selectedToken.fromAmount * 10 ** selectedToken.from.decimals);
     console.log(selectedToken.fromAmount);
     console.log(selectedToken.from.decimals);
     console.log(amount);
@@ -14,43 +13,43 @@ export const getEstimatedGas = createAsyncThunk(
       sellToken: selectedToken.from.address,
       buyToken: selectedToken.to.address,
       sellAmount: amount,
+      takerAddress: getState().account,
     };
 
     const headers = { '0x-api-key': 'c24e40fc-02e9-498c-a46a-40a84ab1814c' };
 
-    const response = await fetch(`https://api.0x.org/swap/v1/price?${new URLSearchParams(params)}`, { headers });
+    const response = await fetch(`https://api.0x.org/swap/v1/quote?${new URLSearchParams(params)}`, { headers });
 
     const swapQuoteJSON = await response.json();
-    console.log(swapQuoteJSON);
-    return swapQuoteJSON.estimatedGas;
+    console.log("Quote: ", swapQuoteJSON / 10 ** selectedToken.to.decimals);
+    return swapQuoteJSON;
   },
 );
 
-const gasSlice = createSlice({
-  name: 'estimatedGas',
+const quoteSlice = createSlice({
+  name: 'quote',
   initialState: {
-    estimatedGas: 0,
+    quote: {},
     status: "idle",
     error: null,
   },
 
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getEstimatedGas.fulfilled, (state, action) => {
-      state.price = action.payload;
+    builder.addCase(getQuote.fulfilled, (state, action) => {
+      state.quote = action.payload;
       state.status = "succeeded";
       state.error = null;
     });
-    builder.addCase(getEstimatedGas.pending, (state, action) => {
-      state.action = action.payload;
+    builder.addCase(getQuote.pending, (state, action) => {
       state.status = "loading";
       state.error = null;
     });
-    builder.addCase(getEstimatedGas.rejected, (state, action) => {
+    builder.addCase(getQuote.rejected, (state, action) => {
       state.status = "failed";
       state.error = action.error.message;
     });
   },
 });
 
-export default gasSlice.reducer;
+export default quoteSlice.reducer;

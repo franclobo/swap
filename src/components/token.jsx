@@ -7,7 +7,6 @@ import Form from 'react-bootstrap/Form';
 import { GrClose } from 'react-icons/gr';
 
 import './token.css';
-import './modal.css';
 
 function Token({ onSelect, search, onClose }) {
   const dispatch = useDispatch();
@@ -69,9 +68,9 @@ function Token({ onSelect, search, onClose }) {
               </div>
             </Modal.Header>
           </div>
-          <Modal.Body className="modal-body">
+          <Modal.Body className="body">
             {isLoading ? (
-              <div>Loading...</div> // Mostrar mensaje de carga mientras se obtienen los tokens
+              <div className="loading">Loading...</div> // Mostrar mensaje de carga mientras se obtienen los tokens
             ) : (
               <ul className="token-list">
                 {Array.isArray(filteredTokens) &&

@@ -24,3 +24,15 @@
   text-align: center;
 }
 
+.from-label {
+  display: flex;
+  justify-content: space-between;
+}
+
+#from,
+#to,
+.refresh,
+.swap {
+  cursor: pointer;
+}
+

@@ -7,8 +7,10 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
+import { FiRefreshCcw } from 'react-icons/fi';
 import Token from './token';
 import Price from './price';
+import TrySwap from './trySwap.jsx';
 import EstimatedGas from './estimatedGas.jsx';
 
 
@@ -18,6 +20,7 @@ function Home() {
   const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState(
     typeof window.ethereum !== "undefined"
   );
+  const btnConnect = document.getElementById("connect");
 
   const dispatch = useDispatch();
 
@@ -25,6 +28,17 @@ function Home() {
     try {
       await window.ethereum.request({ method: "eth_requestAccounts" });
       setIsConnected(true);
+      btnConnect.innerText = "Disconnect";
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function disconnectFromMetaMask() {
+    try {
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      setIsConnected(false);
+      btnConnect.innerText = "Connect";
     } catch (error) {
       console.error(error);
     }
@@ -73,6 +87,16 @@ function Home() {
     });
   };
 
+  const handleRefresh = () => {
+    const from = document.getElementById("from");
+    const to = document.getElementById("to");
+    const fromAmount = document.getElementById("from-amount");
+    from.innerHTML = "Select a token";
+    to.innerHTML = "Select a token";
+    fromAmount.value = "";
+    setSelectedToken({ from: null, to: null, fromAmount: null });
+  };
+
   return (
     <div className="home">
       <>
@@ -81,8 +105,8 @@ function Home() {
             <Navbar.Brand href="#home">SWAP</Navbar.Brand>
             <Nav className="me-auto">
               {isMetaMaskInstalled ? (
-                <Button className="btn btn-large btn-primary btn-block" onClick={connectToMetaMask}>
-                  {isConnected ? "Sign In" : "Connect"}
+                <Button className="btn btn-large btn-primary btn-block" id="connect" onClick={isConnected ? disconnectFromMetaMask : connectToMetaMask}>
+                  {isConnected ? "Disconnect" : "Connect"}
                 </Button>
               ) : (
                 <Button className="btn btn-large btn-primary btn-block" disabled>
@@ -97,10 +121,15 @@ function Home() {
         <h1 className="form-title">SWAP</h1>
         <Form className="form">
           <Form.Group className="mb-3" controlId="mb-3">
-            <Form.Label id="from" onClick={() => handleOpenModal()}>
-              Select a token
-            </Form.Label><br />
-            <Form.Control type="number" placeholder="Amount" onChange={handleChangeAmount} id="from-amount"/>
+            <div className="from-label">
+              <Form.Label id="from" onClick={() => handleOpenModal()}>
+                Select a token
+              </Form.Label>
+              <Form.Label className="refresh" onClick={() => handleRefresh()}>
+                <FiRefreshCcw />
+              </Form.Label>
+            </div>
+            <Form.Control type="text" placeholder="Amount" onChange={handleChangeAmount} id="from-amount"/>
           </Form.Group>
 
             <Form.Group  className="mb-3" controlId="mb-3">
@@ -123,7 +152,7 @@ function Home() {
           </Form.Group>
 
           {isConnected ? (
-            <Button as={Col} md="12" className="btn btn-large btn-primary btn-block" id="swap-btn">
+            <Button as={Col} md="12" className="btn btn-large btn-primary btn-block swap" id="swap-btn" onClick={TrySwap}>
               SWAP
             </Button>
           ) : (

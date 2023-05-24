@@ -1,12 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import BigInt from 'big-integer';
 
 export const getPrice = createAsyncThunk(
   'prices/getPrice', async (selectedToken) => {
     if (!selectedToken.from || !selectedToken.to || !selectedToken.fromAmount) return 0;
 
 
-    const amount = BigInt(Number(selectedToken.fromAmount)) * BigInt(10 ** selectedToken.from.decimals);
+    const amount = Number(selectedToken.fromAmount * 10 ** selectedToken.from.decimals);
     console.log(selectedToken.fromAmount);
     console.log(selectedToken.from.decimals);
     console.log(amount);
@@ -23,7 +22,7 @@ export const getPrice = createAsyncThunk(
     const swapPriceJSON = await response.json();
     console.log(swapPriceJSON);
     console.log(swapPriceJSON.estimatedGas);
-    return { price: swapPriceJSON.price, estimatedGas: swapPriceJSON.estimatedGas}
+    return { price: swapPriceJSON.price / 10 ** selectedToken.to.decimals, estimatedGas: swapPriceJSON.estimatedGas}
   },
 );
 

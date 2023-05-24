@@ -1,4 +1,12 @@
-.token-container,
+.token-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+}
+
 .token-list {
   display: flex;
   flex-direction: column;
@@ -6,6 +14,7 @@
   align-items: flex-start;
   justify-content: center;
   list-style: none;
+  cursor: pointer;
 }
 
 .token-item,
@@ -18,11 +27,29 @@
   justify-content: center;
 }
 
-.loading {
+.modalshow {
+  display: block;
+  position: relative;
+  top: -370px;
+  z-index: 1;
+}
+
+.body {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: flex-start;
+  height: 50vh;
+  overflow-y: scroll;
+}
+
+.modal-header {
+  display: flex;
   justify-content: center;
+  align-items: center;
+}
+
+.loading {
+  text-align: center;
   font-size: 50px;
   font-weight: 400;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
