@@ -10,6 +10,7 @@ import Col from 'react-bootstrap/Col';
 import { FiRefreshCcw } from 'react-icons/fi';
 import Token from './token';
 import Price from './price';
+import Quote from './quote';
 import TrySwap from './trySwap.jsx';
 import EstimatedGas from './estimatedGas.jsx';
 
@@ -137,6 +138,7 @@ function Home() {
               Select a token
             </Form.Label><br />
             <Price selectedToken={selectedToken} />
+            <Quote selectedToken={selectedToken} />
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="mb-3">

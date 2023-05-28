@@ -21,7 +21,7 @@ export const getQuote = createAsyncThunk(
     const response = await fetch(`https://api.0x.org/swap/v1/quote?${new URLSearchParams(params)}`, { headers });
 
     const swapQuoteJSON = await response.json();
-    console.log("Quote: ", swapQuoteJSON / 10 ** selectedToken.to.decimals);
+    console.log("Quote: ", swapQuoteJSON);
     return swapQuoteJSON;
   },
 );
