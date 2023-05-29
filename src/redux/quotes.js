@@ -1,19 +1,21 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const getQuote = createAsyncThunk(
-  'quote/getQuote', async (selectedToken, { getState }) => {
+  'quotes/getQuote', async (selectedToken) => {
     if (!selectedToken.from || !selectedToken.to || !selectedToken.fromAmount) return 0;
 
 
     const amount = Number(selectedToken.fromAmount * 10 ** selectedToken.from.decimals);
-    console.log(selectedToken.fromAmount);
-    console.log(selectedToken.from.decimals);
-    console.log(amount);
+    let accounts = await window.ethereum.request({ method: "eth_accounts" });
+    console.log("Selected Token From Ammount: ", selectedToken.fromAmount);
+    console.log("Selected Token From Decimals: ", selectedToken.from.decimals);
+    console.log("Amount: ", amount);
+    console.log("Accounts: ", accounts);
     const params = {
       sellToken: selectedToken.from.address,
       buyToken: selectedToken.to.address,
       sellAmount: amount,
-      takerAddress: getState().account,
+      takerAddress: accounts[0],
     };
 
     const headers = { '0x-api-key': 'c24e40fc-02e9-498c-a46a-40a84ab1814c' };
@@ -22,14 +24,16 @@ export const getQuote = createAsyncThunk(
 
     const swapQuoteJSON = await response.json();
     console.log("Quote: ", swapQuoteJSON);
-    return swapQuoteJSON;
+    console.log("Sell Token Address: ", swapQuoteJSON.sellTokenAddress);
+    return { quote: swapQuoteJSON, sellTokenAddress: swapQuoteJSON.sellTokenAddress }
   },
 );
 
 const quoteSlice = createSlice({
-  name: 'quote',
+  name: 'quotes',
   initialState: {
     quote: {},
+    sellTokenAddress: '',
     status: "idle",
     error: null,
   },
@@ -37,7 +41,8 @@ const quoteSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getQuote.fulfilled, (state, action) => {
-      state.quote = action.payload;
+      state.quote = action.payload.quote;
+      state.sellTokenAddress = action.payload.sellTokenAddress;
       state.status = "succeeded";
       state.error = null;
     });

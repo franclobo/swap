@@ -130,7 +130,7 @@ function Home() {
                 <FiRefreshCcw />
               </Form.Label>
             </div>
-            <Form.Control type="text" placeholder="Amount" onChange={handleChangeAmount} id="from-amount"/>
+            <Form.Control type="number" step={0.0001} placeholder="Amount" onChange={handleChangeAmount} id="from-amount"/>
           </Form.Group>
 
             <Form.Group  className="mb-3" controlId="mb-3">

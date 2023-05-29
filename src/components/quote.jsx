@@ -4,7 +4,7 @@ import { getQuote } from '../redux/quotes.js';
 
 function Quote({ selectedToken }) {
   const dispatch = useDispatch();
-  const quote = useSelector((state) => state.quotes.quote);
+  const sellTokenAddress = useSelector((state) => state.quotes.sellTokenAddress);
 
   useEffect(() => {
     dispatch(getQuote(selectedToken)).then(() => {
@@ -14,7 +14,11 @@ function Quote({ selectedToken }) {
     });
   }, [selectedToken, dispatch]);
 
-  return quote.amountOut !== undefined ? quote.amountOut : '';
+  return (
+    <span className="quote">
+      {sellTokenAddress !== undefined ? sellTokenAddress : ''}
+    </span>
+  );
 }
 
 export default Quote;

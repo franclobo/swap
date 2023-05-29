@@ -1,5 +1,4 @@
 import Web3 from 'web3';
-import BigNumber from 'bignumber.js';
 import { getQuote } from '../redux/quotes.js';
 
 async function TrySwap() {
@@ -21,8 +20,9 @@ async function TrySwap() {
 
   // Set Token Allowance
   // Set up approval amount
-  const fromTokenAddress = swapQuoteJSON.sellTokenAddress;
-  const maxApproval = new BigNumber(2).pow(256).minus(1);
+  const fromTokenAddress = await getQuote.sellTokenAddress
+  console.log("fromTokenAddress: ", fromTokenAddress);
+  const maxApproval = web3.utils.toBN(2).pow(web3.utils.toBN(256)).sub(web3.utils.toBN(1));
   console.log("Approval amount: ", maxApproval);
   const ERC20TokenContract = new web3.eth.Contract(erc20abi, fromTokenAddress);
   console.log("Setup ERC20TokenContract: ", ERC20TokenContract);
@@ -30,7 +30,7 @@ async function TrySwap() {
   // Grant the allowance target an allowance to spend our tokens.
   const tx = await ERC20TokenContract.methods.approve(
     swapQuoteJSON.allowanceTarget,
-    maxApproval,
+    maxApproval.toString()
   )
     .send({ from: takerAddress })
     .then(tx => {

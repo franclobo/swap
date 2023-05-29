@@ -6,9 +6,9 @@ export const getPrice = createAsyncThunk(
 
 
     const amount = Number(selectedToken.fromAmount * 10 ** selectedToken.from.decimals);
-    console.log(selectedToken.fromAmount);
-    console.log(selectedToken.from.decimals);
-    console.log(amount);
+    console.log("Selected Token From Ammount: ", selectedToken.fromAmount);
+    console.log("Selected Token From Decimals: ", selectedToken.from.decimals);
+    console.log("Amount: ", amount);
     const params = {
       sellToken: selectedToken.from.address,
       buyToken: selectedToken.to.address,
@@ -20,8 +20,8 @@ export const getPrice = createAsyncThunk(
     const response = await fetch(`https://api.0x.org/swap/v1/price?${new URLSearchParams(params)}`, { headers });
 
     const swapPriceJSON = await response.json();
-    console.log(swapPriceJSON);
-    console.log(swapPriceJSON.estimatedGas);
+    console.log("Price: ", swapPriceJSON);
+    console.log("Estimated Gas: ", swapPriceJSON.estimatedGas);
     return { price: swapPriceJSON.price / 10 ** selectedToken.to.decimals, estimatedGas: swapPriceJSON.estimatedGas}
   },
 );
